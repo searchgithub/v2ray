@@ -1,5 +1,5 @@
 FROM alpine:3.6
-LABEL maintainer="Ein Verne <einverne@gmail.com>"
+LABEL maintainer="Ein Verne <qshywl@gmail.com>"
 
 ENV TZ 'Asia/Shanghai'
 
