@@ -1,27 +1,32 @@
-FROM alpine:latest
+FROM alpine:3.6
+LABEL maintainer="Ein Verne <einverne@gmail.com>"
 
-#ENV CONFIG_JSON=none CERT_PEM=none KEY_PEM=none VER=3.35
+ENV TZ 'Asia/Shanghai'
 
-#RUN apk add --no-cache --virtual .build-deps ca-certificates curl \
-# && mkdir -m 777 /v2raybin \ 
-# && cd /v2raybin \
-# && curl -L -H "Cache-Con#trol: no-cache" -o v2ray.zip https://github.com/v2ray/v2ray-core/releases/download/v$VER/v2ray-linux-64.zip \
-# && unzip v2ray.zip \
-# && mv /v2raybin/v2ray-v$VER-linux-64/v2ray /v2raybin/ \
-# && mv /v2raybin/v2ray-v$VER-linux-64/v2ctl /v2raybin/ \
-# && mv /v2raybin/v2ray-v$VER-linux-64/geoip.dat /v2raybin/ \
-# && mv /v2raybin/v2ray-v$VER-linux-64/geosite.dat /v2raybin/ \
-# && chmod +x /v2raybin/v2ray \
-# && rm -rf v2ray.zip \
-# && rm -rf v2ray-v$VER-linux-64 \
-# && chgrp -R 0 /v2raybin \
-# && chmod -R g+rwX /v2raybin 
+ENV V2RAY_VERSION v3.10
 
-RUN mkdir -m 777 /v2ray
+RUN apk upgrade --update \
+    && apk add \
+        bash \
+        tzdata \
+        curl \
+    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && mkdir -p \ 
+        /var/log/v2ray \
+        /usr/bin/v2ray \
+        /tmp/v2ray \
+        /etc/v2ray/ \
+    && curl -L -H "Cache-Control: no-cache" -o /tmp/v2ray/v2ray.zip \
+        https://github.com/v2ray/v2ray-core/releases/download/${V2RAY_VERSION}/v2ray-linux-64.zip \
+    && unzip /tmp/v2ray/v2ray.zip -d /tmp/v2ray/ \
+    && mv /tmp/v2ray/v2ray-${V2RAY_VERSION}-linux-64/* /usr/bin/v2ray/ \
+    && chmod +x /usr/bin/v2ray/v2ray && chmod +x /usr/bin/v2ray/v2ctl \
+    && apk del curl \
+    && rm -rf /tmp/v2ray /var/cache/apk/*
 
-ADD entrypoint.sh /entrypoint.sh
-ADD config.json /v2ray/config.json
-RUN chmod +x /entrypoint.sh 
-ENTRYPOINT  /entrypoint.sh 
+EXPOSE 10800
 
-EXPOSE 8080
+COPY config.json /etc/v2ray/config.json
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
