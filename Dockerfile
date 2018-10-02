@@ -25,7 +25,7 @@ RUN apk upgrade --update \
     && apk del curl \
     && rm -rf /tmp/v2ray /var/cache/apk/*
 
-EXPOSE 10800
+EXPOSE 8080
 
 COPY config.json /etc/v2ray/config.json
 COPY entrypoint.sh /entrypoint.sh
