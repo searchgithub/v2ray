@@ -10,6 +10,7 @@
         {
           "id": "9f41a9a6-4912-4367-887e-9744c140e38a",
           "alterId": 64
+		      "security": "aes-128-gcm"
         }
       ]
     },
@@ -17,6 +18,7 @@
       "network": "ws"
     }
   },
+  "inboundDetour": [],
   "outbound": {
     "protocol": "freedom",
     "settings": {}
